@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.11 — 2026-02-05
+
+- Dim timer display color to reduce distraction
+
 ## 1.2.10 — 2026-02-05
 
 - Fix iOS auto-zoom: add maximum-scale=1 to viewport meta tag
