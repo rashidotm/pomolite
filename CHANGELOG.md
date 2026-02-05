@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3 — 2026-02-05
+
+- Restrict Tab navigation to duration inputs only (remove buttons and color pickers from tab order)
+
 ## 1.2.2 — 2026-02-05
 
 - Add meta description tag for SEO
