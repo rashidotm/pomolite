@@ -337,12 +337,24 @@
       }
 
       // Sound via Web Audio API
-      function getAudioCtx() {
+      function unlockAudio() {
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
         if (audioCtx.state === 'suspended') {
           audioCtx.resume();
+        }
+        // iOS needs a silent buffer played from a user gesture to fully unlock
+        var buf = audioCtx.createBuffer(1, 1, 22050);
+        var src = audioCtx.createBufferSource();
+        src.buffer = buf;
+        src.connect(audioCtx.destination);
+        src.start(0);
+      }
+
+      function getAudioCtx() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
         return audioCtx;
       }
@@ -374,6 +386,7 @@
           btn.addEventListener('click', function (e) {
             // Don't switch stage when clicking the input
             if (e.target.tagName === 'INPUT') return;
+            unlockAudio();
             switchStage(btn.getAttribute('data-stage'));
           });
         })(stageBtns[i]);
@@ -416,6 +429,7 @@
 
       // Start / Pause
       startBtn.addEventListener('click', function () {
+        unlockAudio();
         if (running) {
           stopTimer();
           startBtn.textContent = 'Resume';
