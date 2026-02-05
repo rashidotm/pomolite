@@ -146,6 +146,17 @@
 
     #resetBtn:hover { opacity: 0.85; }
 
+    #clearSettingsBtn {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      min-width: auto;
+      padding: 0.7rem;
+      font-size: 1.1rem;
+      line-height: 1;
+      transition: border-color 0.3s, color 0.3s;
+    }
+
     .cards {
       display: flex;
       flex-direction: column;
@@ -229,8 +240,9 @@
       <div class="controls">
         <button id="startBtn">Start</button>
         <button id="resetBtn">Reset</button>
+        <button id="clearSettingsBtn" title="Reset settings">&#x21ba;</button>
       </div>
-      <div class="version">v1.1.0</div>
+      <div class="version">v1.2.0</div>
     </div>
   </div>
 
@@ -455,6 +467,23 @@
         } else {
           startTimer();
         }
+      });
+
+      // Clear settings — restore defaults
+      var defaults = { durations: { focus: 1500, short: 300, long: 900 }, bgColors: { focus: '#e74c3c', short: '#3498db', long: '#2ecc71' } };
+      document.getElementById('clearSettingsBtn').addEventListener('click', function () {
+        localStorage.removeItem('pomolite');
+        durations = { focus: defaults.durations.focus, short: defaults.durations.short, long: defaults.durations.long };
+        bgColors = { focus: defaults.bgColors.focus, short: defaults.bgColors.short, long: defaults.bgColors.long };
+        ['focus', 'short', 'long'].forEach(function (s) {
+          stageInputs[s].value = durations[s] / 60;
+          colorInputs[s].value = bgColors[s];
+        });
+        if (!running) {
+          secondsLeft = durations[currentStage];
+          updateDisplay();
+        }
+        setStageUI();
       });
 
       // Reset — clear all runtime state, keep user-configured durations & colors

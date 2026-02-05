@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0 — 2026-02-05
+
+- Add reset settings icon button to clear localStorage and restore defaults
+
 ## 1.1.0 — 2026-02-05
 
 - Persist user settings (durations and colors) in localStorage across page reloads
