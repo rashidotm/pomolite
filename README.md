@@ -29,3 +29,4 @@ firebase deploy --only hosting
 
 - Vanilla HTML/CSS/JS — no frameworks, no build tools
 - Firebase Hosting (project: `pomolite001`)
+- Live site: https://pomolite001.web.app
