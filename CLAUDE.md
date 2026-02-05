@@ -40,7 +40,7 @@ There is no package.json, no bundler, and no test framework. All application cod
 
 ## Current State
 
-The pomodoro timer is fully functional (v1.2.0) and live at https://pomolite001.web.app. Features include:
+The pomodoro timer is fully functional and live at https://pomolite001.web.app. Features include:
 
 - Three stages (Focus, Short Break, Long Break) with auto-advance cycle
 - Configurable durations and background colors per stage
