@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 — 2026-02-05
+
+- Persist user settings (durations and colors) in localStorage across page reloads
+
 ## 1.0.2 — 2026-02-05
 
 - Swap default colors: Short Break is now blue, Long Break is now green

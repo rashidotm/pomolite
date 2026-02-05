@@ -230,7 +230,7 @@
         <button id="startBtn">Start</button>
         <button id="resetBtn">Reset</button>
       </div>
-      <div class="version">v1.0.2</div>
+      <div class="version">v1.1.0</div>
     </div>
   </div>
 
@@ -254,10 +254,19 @@
         long:  document.querySelector('[data-stage-color="long"]')
       };
 
+      // Persist settings
+      function saveSettings() {
+        localStorage.setItem('pomolite', JSON.stringify({ durations: durations, bgColors: bgColors }));
+      }
+      function loadSettings() {
+        try { return JSON.parse(localStorage.getItem('pomolite')); } catch (e) { return null; }
+      }
+
       // State
+      var saved = loadSettings();
       var currentStage = 'focus';
-      var durations = { focus: 1500, short: 300, long: 900 };
-      var bgColors = { focus: '#e74c3c', short: '#3498db', long: '#2ecc71' };
+      var durations = saved && saved.durations || { focus: 1500, short: 300, long: 900 };
+      var bgColors = saved && saved.bgColors || { focus: '#e74c3c', short: '#3498db', long: '#2ecc71' };
       var secondsLeft = durations.focus;
       var running = false;
       var intervalId = null;
@@ -410,6 +419,7 @@
           if (val > 120) val = 120;
           input.value = val;
           durations[stage] = val * 60;
+          saveSettings();
           if (stage === currentStage && !running) {
             secondsLeft = durations[stage];
             updateDisplay();
@@ -426,6 +436,7 @@
         input.addEventListener('click', function (e) { e.stopPropagation(); });
         input.addEventListener('input', function () {
           bgColors[stage] = input.value;
+          saveSettings();
           if (stage === currentStage) {
             body.style.background = input.value;
           }
@@ -458,7 +469,14 @@
         updateDisplay();
       });
 
-      // Init
+      // Init — restore saved settings to inputs
+      if (saved) {
+        ['focus', 'short', 'long'].forEach(function (s) {
+          stageInputs[s].value = durations[s] / 60;
+          colorInputs[s].value = bgColors[s];
+        });
+        secondsLeft = durations.focus;
+      }
       setStageUI();
       updateDisplay();
     })();
