@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.5 — 2026-02-05
+
+- Add footer with Claude Code credit and GitHub repo link
+
 ## 1.2.4 — 2026-02-05
 
 - Select all text on duration input click for easier editing
