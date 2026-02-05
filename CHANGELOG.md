@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.7 — 2026-02-05
+
+- Fix iOS viewport overflow by using dynamic viewport height (100dvh)
+- Fix iOS favicon: replace inline SVG with proper PNG favicons and web manifest
+
 ## 1.2.6 — 2026-02-05
 
 - Fix footer: pin to bottom of page with card-style background for visibility
