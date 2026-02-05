@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2 — 2026-02-05
+
+- Add meta description tag for SEO
+
 ## 1.2.1 — 2026-02-05
 
 - Add inline SVG favicon (tomato icon)
