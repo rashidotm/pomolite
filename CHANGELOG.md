@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 — 2026-02-05
+
+- Fix: Stop auto-starting timer on page load; wait for user to press Start
+
 ## 1.0.0 — 2026-02-05
 
 - Initial release
