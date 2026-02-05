@@ -177,18 +177,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cards.running .card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--stage-bg);
-      opacity: 0.85;
-      transition: opacity 0.3s;
-      pointer-events: none;
     }
 
     .pomo-count {
@@ -274,7 +262,7 @@
   </div>
 
   <footer class="footer">
-    <a href="https://github.com/rashidotm/pomolite" target="_blank">GitHub</a> · v1.2.12
+    <a href="https://github.com/rashidotm/pomolite" target="_blank">GitHub</a> · v1.2.11
   </footer>
 
   <script>
@@ -285,7 +273,6 @@
       var resetBtn = document.getElementById('resetBtn');
       var pomoCountEl = document.getElementById('pomoCount');
       var body = document.body;
-      var cardsEl = document.querySelector('.cards');
       var stageBtns = document.querySelectorAll('.stage-btn');
       var stageInputs = {
         focus: document.querySelector('[data-stage-input="focus"]'),
@@ -333,7 +320,6 @@
       function setStageUI() {
         body.className = currentStage;
         body.style.background = bgColors[currentStage];
-        body.style.setProperty('--stage-bg', bgColors[currentStage]);
         for (var i = 0; i < stageBtns.length; i++) {
           stageBtns[i].classList.toggle('active', stageBtns[i].getAttribute('data-stage') === currentStage);
         }
@@ -355,7 +341,6 @@
           intervalId = null;
         }
         running = false;
-        cardsEl.classList.remove('running');
       }
 
       function tick() {
@@ -370,7 +355,6 @@
 
       function startTimer() {
         if (secondsLeft <= 0) return;
-        cardsEl.classList.add('running');
         running = true;
         endTime = Date.now() + secondsLeft * 1000;
         startBtn.textContent = 'Pause';
