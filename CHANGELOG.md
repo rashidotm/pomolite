@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.9 — 2026-02-05
+
+- Prevent iOS auto-zoom on input focus by setting duration input font size to 16px
+
 ## 1.2.8 — 2026-02-05
 
 - Move version number to footer next to GitHub link, remove Claude Code credit
