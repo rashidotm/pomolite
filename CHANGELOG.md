@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.6 — 2026-02-05
+
+- Fix footer: pin to bottom of page with card-style background for visibility
+
 ## 1.2.5 — 2026-02-05
 
 - Add footer with Claude Code credit and GitHub repo link
