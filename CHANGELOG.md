@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.8 — 2026-02-05
+
+- Move version number to footer next to GitHub link, remove Claude Code credit
+
 ## 1.2.7 — 2026-02-05
 
 - Fix iOS viewport overflow by using dynamic viewport height (100dvh)
