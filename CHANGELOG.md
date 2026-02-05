@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.12 — 2026-02-05
+
+- Add stage-colored overlay on cards when timer is running to reduce distraction
+
 ## 1.2.11 — 2026-02-05
 
 - Dim timer display color to reduce distraction
