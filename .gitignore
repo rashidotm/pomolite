@@ -68,8 +68,5 @@ node_modules/
 # dataconnect generated files
 .dataconnect
 
-# Claude Code
-CLAUDE.md
-
 # Windows artifact
 nul
