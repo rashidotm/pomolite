@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.4 — 2026-02-05
+
+- Select all text on duration input click for easier editing
+
 ## 1.2.3 — 2026-02-05
 
 - Restrict Tab navigation to duration inputs only (remove buttons and color pickers from tab order)
