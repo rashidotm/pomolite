@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PomoLite</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent: #e74c3c;
+      --accent-dim: rgba(231, 76, 60, 0.15);
+      --bg: #1a1a2e;
+      --surface: #16213e;
+      --text: #eee;
+      --text-dim: #999;
+    }
+
+    body.focus  { --accent: #e74c3c; --accent-dim: rgba(231, 76, 60, 0.15); }
+    body.short  { --accent: #2ecc71; --accent-dim: rgba(46, 204, 113, 0.15); }
+    body.long   { --accent: #3498db; --accent-dim: rgba(52, 152, 219, 0.15); }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background 0.3s;
+      padding: 1rem;
+    }
+
+    .stages {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .stage-btn {
+      background: var(--surface);
+      color: var(--text-dim);
+      border: 2px solid transparent;
+      border-radius: 8px;
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      transition: border-color 0.3s, color 0.3s, background 0.3s;
+    }
+
+    .stage-btn:hover {
+      background: var(--accent-dim);
+    }
+
+    .stage-btn.active {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .stage-btn .label { pointer-events: none; }
+
+    .stage-btn .color-row {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .stage-btn input[type="color"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 1.6rem;
+      height: 1.6rem;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      padding: 0;
+      cursor: pointer;
+      background: none;
+    }
+
+    .stage-btn input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+    .stage-btn input[type="color"]::-webkit-color-swatch { border: none; border-radius: 2px; }
+    .stage-btn input[type="color"]::-moz-color-swatch { border: none; border-radius: 2px; }
+
+    .stage-btn input[type="number"] {
+      width: 4.5rem;
+      text-align: center;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 1.1rem;
+      font-family: inherit;
+      padding: 0.35rem 0.3rem;
+    }
+
+    .stage-btn input:focus {
+      outline: 1px solid var(--accent);
+      border-color: var(--accent);
+    }
+
+    .timer-display {
+      font-size: 6rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+
+    .controls {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .controls button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.8rem;
+      font-size: 1rem;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, opacity 0.2s;
+      min-width: 7rem;
+    }
+
+    .controls button:hover { opacity: 0.85; }
+
+    #resetBtn {
+      background: transparent;
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    #resetBtn:hover { opacity: 0.85; }
+
+    .cards {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .pomo-count {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    @media (max-width: 480px) {
+      .timer-display { font-size: 3.8rem; }
+      h1 { font-size: 1.3rem; margin-bottom: 1.5rem; }
+      .controls button { padding: 0.6rem 1.2rem; font-size: 0.9rem; min-width: 5.5rem; }
+      .stage-btn { padding: 0.4rem 0.6rem; font-size: 0.78rem; }
+      .card { padding: 1rem 1rem; border-radius: 12px; }
+      .cards { gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body class="focus">
+
+  <div class="cards">
+    <div class="card">
+      <div class="stages">
+        <button class="stage-btn active" data-stage="focus">
+          <span class="label">Focus</span>
+          <input type="number" min="1" max="120" value="25" data-stage-input="focus" aria-label="Focus minutes">
+    
+          <div class="color-row">
+    
+            <input type="color" value="#e74c3c" data-stage-color="focus" aria-label="Focus background color">
+          </div>
+        </button>
+        <button class="stage-btn" data-stage="short">
+          <span class="label">Short Break</span>
+          <input type="number" min="1" max="60" value="5" data-stage-input="short" aria-label="Short break minutes">
+    
+          <div class="color-row">
+    
+            <input type="color" value="#2ecc71" data-stage-color="short" aria-label="Short break background color">
+          </div>
+        </button>
+        <button class="stage-btn" data-stage="long">
+          <span class="label">Long Break</span>
+          <input type="number" min="1" max="60" value="15" data-stage-input="long" aria-label="Long break background color">
+    
+          <div class="color-row">
+    
+            <input type="color" value="#3498db" data-stage-color="long" aria-label="Long break background color">
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="timer-display" id="timerDisplay">25:00</div>
+      <div class="pomo-count" id="pomoCount">Focus sessions: 0</div>
+    </div>
+
+    <div class="card">
+      <div class="controls">
+        <button id="startBtn">Start</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // Cached DOM refs
+      var display = document.getElementById('timerDisplay');
+      var startBtn = document.getElementById('startBtn');
+      var resetBtn = document.getElementById('resetBtn');
+      var pomoCountEl = document.getElementById('pomoCount');
+      var body = document.body;
+      var stageBtns = document.querySelectorAll('.stage-btn');
+      var stageInputs = {
+        focus: document.querySelector('[data-stage-input="focus"]'),
+        short: document.querySelector('[data-stage-input="short"]'),
+        long:  document.querySelector('[data-stage-input="long"]')
+      };
+      var colorInputs = {
+        focus: document.querySelector('[data-stage-color="focus"]'),
+        short: document.querySelector('[data-stage-color="short"]'),
+        long:  document.querySelector('[data-stage-color="long"]')
+      };
+
+      // State
+      var currentStage = 'focus';
+      var durations = { focus: 1500, short: 300, long: 900 };
+      var bgColors = { focus: '#e74c3c', short: '#2ecc71', long: '#3498db' };
+      var secondsLeft = durations.focus;
+      var running = false;
+      var intervalId = null;
+      var endTime = 0;
+      var audioCtx = null;
+      var pomodoroCount = 0;
+
+      // Format seconds as MM:SS
+      function formatTime(s) {
+        var m = Math.floor(s / 60);
+        var sec = s % 60;
+        return (m < 10 ? '0' + m : m) + ':' + (sec < 10 ? '0' + sec : sec);
+      }
+
+      function updateDisplay() {
+        display.textContent = formatTime(secondsLeft);
+        document.title = formatTime(secondsLeft) + ' - PomoLite';
+      }
+
+      function setStageUI() {
+        body.className = currentStage;
+        body.style.background = bgColors[currentStage];
+        for (var i = 0; i < stageBtns.length; i++) {
+          stageBtns[i].classList.toggle('active', stageBtns[i].getAttribute('data-stage') === currentStage);
+        }
+      }
+
+      function switchStage(stage) {
+        if (stage === currentStage && !running) return;
+        stopTimer();
+        currentStage = stage;
+        secondsLeft = durations[stage];
+        startBtn.textContent = 'Start';
+        setStageUI();
+        updateDisplay();
+      }
+
+      function stopTimer() {
+        if (intervalId !== null) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        running = false;
+      }
+
+      function tick() {
+        var now = Date.now();
+        secondsLeft = Math.max(0, Math.round((endTime - now) / 1000));
+        updateDisplay();
+        if (secondsLeft <= 0) {
+          stopTimer();
+          onTimerComplete();
+        }
+      }
+
+      function startTimer() {
+        if (secondsLeft <= 0) return;
+        running = true;
+        endTime = Date.now() + secondsLeft * 1000;
+        startBtn.textContent = 'Pause';
+        intervalId = setInterval(tick, 250);
+      }
+
+      function onTimerComplete() {
+        playAlert();
+
+        // Determine next stage
+        var nextStage;
+        if (currentStage === 'focus') {
+          pomodoroCount++;
+          pomoCountEl.textContent = 'Focus sessions: ' + pomodoroCount;
+          nextStage = (pomodoroCount % 4 === 0) ? 'long' : 'short';
+        } else {
+          nextStage = 'focus';
+        }
+
+        // Auto-advance
+        currentStage = nextStage;
+        secondsLeft = durations[nextStage];
+        setStageUI();
+        updateDisplay();
+
+        // Auto-start after a brief delay so user sees the stage change
+        setTimeout(function () { startTimer(); }, 1200);
+      }
+
+      // Sound via Web Audio API
+      function getAudioCtx() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      function beep(ctx, startAt) {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = 660;
+        gain.gain.setValueAtTime(0.3, startAt);
+        gain.gain.exponentialRampToValueAtTime(0.001, startAt + 0.3);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(startAt);
+        osc.stop(startAt + 0.3);
+      }
+
+      function playAlert() {
+        var ctx = getAudioCtx();
+        var now = ctx.currentTime;
+        beep(ctx, now);
+        beep(ctx, now + 0.5);
+        beep(ctx, now + 1.0);
+      }
+
+      // Event listeners — stage buttons
+      for (var i = 0; i < stageBtns.length; i++) {
+        (function (btn) {
+          btn.addEventListener('click', function (e) {
+            // Don't switch stage when clicking the input
+            if (e.target.tagName === 'INPUT') return;
+            switchStage(btn.getAttribute('data-stage'));
+          });
+        })(stageBtns[i]);
+      }
+
+      // Event listeners — duration inputs
+      function bindInput(stage) {
+        var input = stageInputs[stage];
+        input.addEventListener('click', function (e) { e.stopPropagation(); });
+        input.addEventListener('change', function () {
+          var val = parseInt(input.value, 10);
+          if (isNaN(val) || val < 1) val = 1;
+          if (val > 120) val = 120;
+          input.value = val;
+          durations[stage] = val * 60;
+          if (stage === currentStage && !running) {
+            secondsLeft = durations[stage];
+            updateDisplay();
+          }
+        });
+      }
+      bindInput('focus');
+      bindInput('short');
+      bindInput('long');
+
+      // Event listeners — color pickers
+      function bindColor(stage) {
+        var input = colorInputs[stage];
+        input.addEventListener('click', function (e) { e.stopPropagation(); });
+        input.addEventListener('input', function () {
+          bgColors[stage] = input.value;
+          if (stage === currentStage) {
+            body.style.background = input.value;
+          }
+        });
+      }
+      bindColor('focus');
+      bindColor('short');
+      bindColor('long');
+
+      // Start / Pause
+      startBtn.addEventListener('click', function () {
+        if (running) {
+          stopTimer();
+          startBtn.textContent = 'Resume';
+        } else {
+          startTimer();
+        }
+      });
+
+      // Reset — clear all runtime state, keep user-configured durations & colors
+      resetBtn.addEventListener('click', function () {
+        stopTimer();
+        pomodoroCount = 0;
+        pomoCountEl.textContent = 'Focus sessions: 0';
+        currentStage = 'focus';
+        secondsLeft = durations.focus;
+        startBtn.textContent = 'Start';
+        setStageUI();
+        updateDisplay();
+      });
+
+      // Init
+      setStageUI();
+      updateDisplay();
+      startTimer();
+    })();
+  </script>
+</body>
+</html>
