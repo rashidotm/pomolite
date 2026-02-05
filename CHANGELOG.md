@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.10 — 2026-02-05
+
+- Fix iOS auto-zoom: add maximum-scale=1 to viewport meta tag
+
 ## 1.2.9 — 2026-02-05
 
 - Prevent iOS auto-zoom on input focus by setting duration input font size to 16px
