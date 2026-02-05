@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1 — 2026-02-05
+
+- Add inline SVG favicon (tomato icon)
+
 ## 1.2.0 — 2026-02-05
 
 - Add reset settings icon button to clear localStorage and restore defaults
