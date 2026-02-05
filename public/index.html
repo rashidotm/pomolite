@@ -179,11 +179,20 @@
       align-items: center;
     }
 
-    .pomo-count {
+    .cycle-bar {
       margin-top: 0.75rem;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      flex-wrap: wrap;
+      justify-content: center;
     }
+
+    .cycle-bar .step { opacity: 0.4; }
+    .cycle-bar .step.active { opacity: 1; color: var(--accent); text-decoration: underline; }
+    .cycle-bar .arrow { opacity: 0.3; }
 
     .footer {
       position: fixed;
@@ -249,7 +258,7 @@
 
     <div class="card">
       <div class="timer-display" id="timerDisplay">25:00</div>
-      <div class="pomo-count" id="pomoCount">Focus sessions: 0</div>
+      <div class="cycle-bar" id="cycleBar"></div>
     </div>
 
     <div class="card">
@@ -262,7 +271,7 @@
   </div>
 
   <footer class="footer">
-    <a href="https://github.com/rashidotm/pomolite" target="_blank">GitHub</a> · v1.2.11
+    <a href="https://github.com/rashidotm/pomolite" target="_blank">GitHub</a> · v1.3.0
   </footer>
 
   <script>
@@ -271,7 +280,7 @@
       var display = document.getElementById('timerDisplay');
       var startBtn = document.getElementById('startBtn');
       var resetBtn = document.getElementById('resetBtn');
-      var pomoCountEl = document.getElementById('pomoCount');
+      var cycleBarEl = document.getElementById('cycleBar');
       var body = document.body;
       var stageBtns = document.querySelectorAll('.stage-btn');
       var stageInputs = {
@@ -303,7 +312,8 @@
       var intervalId = null;
       var endTime = 0;
       var audioCtx = null;
-      var pomodoroCount = 0;
+      var cycle = ['F','SB','F','SB','F','SB','F','SB','F','LB'];
+      var cycleIndex = 0;
 
       // Format seconds as MM:SS
       function formatTime(s) {
@@ -315,6 +325,15 @@
       function updateDisplay() {
         display.textContent = formatTime(secondsLeft);
         document.title = formatTime(secondsLeft) + ' - PomoLite';
+      }
+
+      function renderCycle() {
+        var html = '';
+        for (var i = 0; i < cycle.length; i++) {
+          if (i > 0) html += '<span class="arrow">→</span>';
+          html += '<span class="step' + (i === cycleIndex ? ' active' : '') + '">' + cycle[i] + '</span>';
+        }
+        cycleBarEl.innerHTML = html;
       }
 
       function setStageUI() {
@@ -364,21 +383,17 @@
       function onTimerComplete() {
         playAlert();
 
-        // Determine next stage
-        var nextStage;
-        if (currentStage === 'focus') {
-          pomodoroCount++;
-          pomoCountEl.textContent = 'Focus sessions: ' + pomodoroCount;
-          nextStage = (pomodoroCount % 4 === 0) ? 'long' : 'short';
-        } else {
-          nextStage = 'focus';
-        }
+        // Advance cycle
+        cycleIndex = (cycleIndex + 1) % cycle.length;
+        var label = cycle[cycleIndex];
+        var nextStage = label === 'F' ? 'focus' : label === 'SB' ? 'short' : 'long';
 
         // Auto-advance
         currentStage = nextStage;
         secondsLeft = durations[nextStage];
         setStageUI();
         updateDisplay();
+        renderCycle();
 
         // Auto-start after a brief delay so user sees the stage change
         setTimeout(function () { startTimer(); }, 1200);
@@ -508,13 +523,13 @@
       // Reset — clear all runtime state, keep user-configured durations & colors
       resetBtn.addEventListener('click', function () {
         stopTimer();
-        pomodoroCount = 0;
-        pomoCountEl.textContent = 'Focus sessions: 0';
+        cycleIndex = 0;
         currentStage = 'focus';
         secondsLeft = durations.focus;
         startBtn.textContent = 'Start';
         setStageUI();
         updateDisplay();
+        renderCycle();
       });
 
       // Init — restore saved settings to inputs
@@ -527,6 +542,7 @@
       }
       setStageUI();
       updateDisplay();
+      renderCycle();
     })();
   </script>
 </body>

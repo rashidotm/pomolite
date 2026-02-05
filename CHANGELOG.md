@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 — 2026-02-05
+
+- Replace focus counter with visual cycle progress bar (F → SB → ... → LB)
+
 ## 1.2.11 — 2026-02-05
 
 - Dim timer display color to reduce distraction
