@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 — 2026-02-05
+
+- Swap default colors: Short Break is now blue, Long Break is now green
+
 ## 1.0.1 — 2026-02-05
 
 - Fix: Stop auto-starting timer on page load; wait for user to press Start

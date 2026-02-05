@@ -17,8 +17,8 @@
     }
 
     body.focus  { --accent: #e74c3c; --accent-dim: rgba(231, 76, 60, 0.15); }
-    body.short  { --accent: #2ecc71; --accent-dim: rgba(46, 204, 113, 0.15); }
-    body.long   { --accent: #3498db; --accent-dim: rgba(52, 152, 219, 0.15); }
+    body.short  { --accent: #3498db; --accent-dim: rgba(52, 152, 219, 0.15); }
+    body.long   { --accent: #2ecc71; --accent-dim: rgba(46, 204, 113, 0.15); }
 
     body {
       background: var(--bg);
@@ -205,7 +205,7 @@
     
           <div class="color-row">
     
-            <input type="color" value="#2ecc71" data-stage-color="short" aria-label="Short break background color">
+            <input type="color" value="#3498db" data-stage-color="short" aria-label="Short break background color">
           </div>
         </button>
         <button class="stage-btn" data-stage="long">
@@ -214,7 +214,7 @@
     
           <div class="color-row">
     
-            <input type="color" value="#3498db" data-stage-color="long" aria-label="Long break background color">
+            <input type="color" value="#2ecc71" data-stage-color="long" aria-label="Long break background color">
           </div>
         </button>
       </div>
@@ -230,7 +230,7 @@
         <button id="startBtn">Start</button>
         <button id="resetBtn">Reset</button>
       </div>
-      <div class="version">v1.0.1</div>
+      <div class="version">v1.0.2</div>
     </div>
   </div>
 
@@ -257,7 +257,7 @@
       // State
       var currentStage = 'focus';
       var durations = { focus: 1500, short: 300, long: 900 };
-      var bgColors = { focus: '#e74c3c', short: '#2ecc71', long: '#3498db' };
+      var bgColors = { focus: '#e74c3c', short: '#3498db', long: '#2ecc71' };
       var secondsLeft = durations.focus;
       var running = false;
       var intervalId = null;
