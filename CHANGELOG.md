@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 — 2026-02-08
+
+- Add browser notifications on stage completion (toggle with bell icon)
+- Notification shows "Start {next stage}" when a stage completes
+- Permission requested on first enable, preference persisted in settings
+
 ## 1.3.0 — 2026-02-05
 
 - Replace focus counter with visual cycle progress bar (F → SB → ... → LB)

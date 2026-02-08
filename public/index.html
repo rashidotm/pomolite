@@ -152,7 +152,8 @@
 
     #resetBtn:hover { opacity: 0.85; }
 
-    #clearSettingsBtn {
+    #clearSettingsBtn,
+    #notifyBtn {
       background: transparent;
       border: 2px solid var(--accent);
       color: var(--accent);
@@ -161,6 +162,16 @@
       font-size: 1.1rem;
       line-height: 1;
       transition: border-color 0.3s, color 0.3s;
+    }
+
+    #notifyBtn.enabled {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    #notifyBtn.denied {
+      opacity: 0.4;
+      cursor: not-allowed;
     }
 
     .cards {
@@ -265,13 +276,14 @@
       <div class="controls">
         <button id="startBtn" tabindex="-1">Start</button>
         <button id="resetBtn" tabindex="-1">Reset</button>
+        <button id="notifyBtn" title="Toggle notifications" tabindex="-1">&#x1F514;</button>
         <button id="clearSettingsBtn" title="Reset settings" tabindex="-1">&#x1F5D1;</button>
       </div>
     </div>
   </div>
 
   <footer class="footer">
-    <a href="https://github.com/rashidotm/pomolite" target="_blank">GitHub</a> · v1.3.0
+    <a href="https://github.com/rashidotm/pomolite" target="_blank">GitHub</a> · v1.4.0
   </footer>
 
   <script>
@@ -280,6 +292,7 @@
       var display = document.getElementById('timerDisplay');
       var startBtn = document.getElementById('startBtn');
       var resetBtn = document.getElementById('resetBtn');
+      var notifyBtn = document.getElementById('notifyBtn');
       var cycleBarEl = document.getElementById('cycleBar');
       var body = document.body;
       var stageBtns = document.querySelectorAll('.stage-btn');
@@ -296,7 +309,7 @@
 
       // Persist settings
       function saveSettings() {
-        localStorage.setItem('pomolite', JSON.stringify({ durations: durations, bgColors: bgColors }));
+        localStorage.setItem('pomolite', JSON.stringify({ durations: durations, bgColors: bgColors, notificationsEnabled: notificationsEnabled }));
       }
       function loadSettings() {
         try { return JSON.parse(localStorage.getItem('pomolite')); } catch (e) { return null; }
@@ -307,6 +320,7 @@
       var currentStage = 'focus';
       var durations = saved && saved.durations || { focus: 1500, short: 300, long: 900 };
       var bgColors = saved && saved.bgColors || { focus: '#e74c3c', short: '#3498db', long: '#2ecc71' };
+      var notificationsEnabled = saved && saved.notificationsEnabled || false;
       var secondsLeft = durations.focus;
       var running = false;
       var intervalId = null;
@@ -388,6 +402,9 @@
         var label = cycle[cycleIndex];
         var nextStage = label === 'F' ? 'focus' : label === 'SB' ? 'short' : 'long';
 
+        // Send notification before switching stage
+        sendNotification(nextStage);
+
         // Auto-advance
         currentStage = nextStage;
         secondsLeft = durations[nextStage];
@@ -442,6 +459,78 @@
         beep(ctx, now + 0.5);
         beep(ctx, now + 1.0);
       }
+
+      // Notifications
+      var stageNames = { focus: 'Focus', short: 'Short Break', long: 'Long Break' };
+
+      function notificationsSupported() {
+        return 'Notification' in window;
+      }
+
+      function updateNotifyBtnUI() {
+        if (!notificationsSupported()) {
+          notifyBtn.classList.add('denied');
+          notifyBtn.title = 'Notifications not supported';
+          return;
+        }
+        if (Notification.permission === 'denied') {
+          notifyBtn.classList.add('denied');
+          notifyBtn.classList.remove('enabled');
+          notifyBtn.title = 'Notifications blocked';
+          notificationsEnabled = false;
+          return;
+        }
+        notifyBtn.classList.remove('denied');
+        notifyBtn.classList.toggle('enabled', notificationsEnabled);
+        notifyBtn.title = notificationsEnabled ? 'Notifications on' : 'Notifications off';
+      }
+
+      function sendNotification(nextStage) {
+        if (!notificationsEnabled || !notificationsSupported()) return;
+        if (Notification.permission !== 'granted') return;
+
+        var title = 'Start ' + stageNames[nextStage];
+
+        try {
+          new Notification(title, {
+            icon: '/favicon-32x32.png',
+            tag: 'pomolite-stage',
+            renotify: true
+          });
+        } catch (e) {
+          // Fallback for mobile (Service Worker required) - silently ignore
+        }
+      }
+
+      function toggleNotifications() {
+        if (!notificationsSupported()) return;
+
+        if (Notification.permission === 'denied') {
+          alert('Notifications are blocked. Please enable them in your browser settings.');
+          return;
+        }
+
+        if (Notification.permission === 'default') {
+          Notification.requestPermission().then(function (result) {
+            if (result === 'granted') {
+              notificationsEnabled = true;
+              saveSettings();
+              updateNotifyBtnUI();
+            } else {
+              updateNotifyBtnUI();
+            }
+          });
+          return;
+        }
+
+        // Permission already granted - toggle
+        notificationsEnabled = !notificationsEnabled;
+        saveSettings();
+        updateNotifyBtnUI();
+      }
+
+      // Event listeners — notification button
+      notifyBtn.addEventListener('click', toggleNotifications);
 
       // Event listeners — stage buttons
       for (var i = 0; i < stageBtns.length; i++) {
@@ -509,6 +598,7 @@
         localStorage.removeItem('pomolite');
         durations = { focus: defaults.durations.focus, short: defaults.durations.short, long: defaults.durations.long };
         bgColors = { focus: defaults.bgColors.focus, short: defaults.bgColors.short, long: defaults.bgColors.long };
+        notificationsEnabled = false;
         ['focus', 'short', 'long'].forEach(function (s) {
           stageInputs[s].value = durations[s] / 60;
           colorInputs[s].value = bgColors[s];
@@ -518,6 +608,7 @@
           updateDisplay();
         }
         setStageUI();
+        updateNotifyBtnUI();
       });
 
       // Reset — clear all runtime state, keep user-configured durations & colors
@@ -543,6 +634,7 @@
       setStageUI();
       updateDisplay();
       renderCycle();
+      updateNotifyBtnUI();
     })();
   </script>
 </body>
